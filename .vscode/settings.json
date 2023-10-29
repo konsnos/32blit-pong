@@ -1,0 +1,8 @@
+{
+    "cmake.configureSettings": {
+        "32BLIT_DIR": "/Users/konsnos/Documents/GitHub/32blit-sdk"
+    },
+    "files.associations": {
+        "__node_handle": "cpp"
+    }
+}
