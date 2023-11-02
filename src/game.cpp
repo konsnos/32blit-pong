@@ -12,32 +12,36 @@ const int paddleHeight = 40;
 const float paddleSpeed = 150.0f;
 const blit::Pen playerColour(0, 255, 0);
 blit::Vec2 playerPosition;
-blit::Rect playerRect;
+blit::Rect playerRect(0, 0, paddleWith, paddleHeight);
 uint8_t playerScore;
 
 const blit::Pen enemyColour(255, 20, 147);
 blit::Vec2 enemyPosition;
-blit::Rect enemyRect;
+const float enemySpeed = 60.0f;
+blit::Rect enemyRect(0, 0, paddleWith, paddleHeight);
 uint8_t enemyScore;
 
 const int ballSize = 4;
 blit::Vec2 ballPosition;
-blit::Rect ballRect;
+blit::Rect ballRect(0, 0, ballSize, ballSize);
 const blit::Pen ballColour(0, 0, 255);
-const float ballInitialSpeed = 80.0f;
+const float ballInitialSpeed = 100.0f;
 const float ballSpeedIncrease = 1.1f;
 blit::Vec2 ballVelocity;
 
 void resetSession()
 {
     playerPosition = Vec2(6.0f, (240.0f / 2.0f) - (paddleHeight / 2.0f));
-    playerRect = Rect(playerPosition.x, playerPosition.y, paddleWith, paddleHeight);
+    playerRect.x = playerPosition.x;
+    playerRect.y = playerPosition.y;
 
     enemyPosition = Vec2(310.0f, (240.0f / 2.0f) - (paddleHeight / 2.0f));
-    enemyRect = Rect(enemyPosition.x, enemyPosition.y, paddleWith, paddleHeight);
+    enemyRect.x = enemyPosition.x;
+    enemyRect.y = enemyPosition.y;
     
     ballPosition = Vec2(160.0f - ballSize, (240.0f / 2.0f) - (ballSize / 2.0f));
-    ballRect = Rect(ballPosition.x, ballPosition.y, ballSize, ballSize);
+    ballRect.x = ballPosition.x;
+    ballRect.y = ballPosition.y;
     ballVelocity = Vec2(-ballInitialSpeed, 0.0f);
 }
 
@@ -117,14 +121,15 @@ void handlePlayerInput(float dt)
         {
             playerPosition.y = 240 - paddleHeight;
         }
-        playerRect = Rect(playerPosition.x, playerPosition.y, paddleWith, paddleHeight);
+        playerRect.y = playerPosition.y;
     }
 }
 
 void handleBall(float dt)
 {
     ballPosition += ballVelocity * dt;
-    ballRect = Rect(ballPosition.x, ballPosition.y, ballSize, ballSize);
+    ballRect.x = ballPosition.x;
+    ballRect.y = ballPosition.y;
 
     if(ballPosition.x < 0)
     {
@@ -142,7 +147,36 @@ void handleBall(float dt)
 
 void updateEnemy(float dt)
 {
-    enemyRect = Rect(enemyPosition.x, enemyPosition.y, paddleWith, paddleHeight);
+    auto enemyCenterPosition = enemyPosition.y + paddleHeight / 2.0f;
+    auto ballCenterPosition = ballPosition.y + ballSize / 2.0f;
+    
+    auto enemySpeedFrame = enemySpeed * dt;
+    if(ballVelocity.x < 0)
+    {
+        if(enemyCenterPosition < 240 / 2.0f)
+        {
+            enemyPosition.y += enemySpeedFrame;
+        }
+        else if(enemyCenterPosition > 240 / 2.0f)
+        {
+            enemyPosition.y -= enemySpeedFrame;
+        }
+    }
+    else
+    {
+        auto distance = enemyCenterPosition - ballCenterPosition;
+        auto distanceAbs = std::abs(distance);
+        if(distance < 0 && distanceAbs > enemySpeedFrame)
+        {
+            enemyPosition.y += enemySpeedFrame;
+        }
+        else if(distance > 0 && distanceAbs > enemySpeedFrame)
+        {
+            enemyPosition.y -= enemySpeedFrame;
+        }
+    }
+
+    enemyRect.y = enemyPosition.y;
 }
 
 bool isColliding(blit::Rect rect1, blit::Rect rect2)
