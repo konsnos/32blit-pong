@@ -30,13 +30,13 @@ blit::Vec2 ballVelocity;
 
 void resetSession()
 {
-    playerPosition = Vec2(6.0f, 240.0f / 2.0f - paddleHeight / 2.0f);
+    playerPosition = Vec2(6.0f, (240.0f / 2.0f) - (paddleHeight / 2.0f));
     playerRect = Rect(playerPosition.x, playerPosition.y, paddleWith, paddleHeight);
 
-    enemyPosition = Vec2(310.0f, 240.0f / 2.0f - paddleHeight / 2.0f);
+    enemyPosition = Vec2(310.0f, (240.0f / 2.0f) - (paddleHeight / 2.0f));
     enemyRect = Rect(enemyPosition.x, enemyPosition.y, paddleWith, paddleHeight);
     
-    ballPosition = Vec2(160.0f - ballSize, 240.0f / 2.0f - ballSize);
+    ballPosition = Vec2(160.0f - ballSize, (240.0f / 2.0f) - (ballSize / 2.0f));
     ballRect = Rect(ballPosition.x, ballPosition.y, ballSize, ballSize);
     ballVelocity = Vec2(-ballInitialSpeed, 0.0f);
 }
@@ -158,12 +158,12 @@ void checkCollisions(float dt)
     if(isColliding(ballRect, playerRect))
     {
         ballVelocity.x = -ballVelocity.x * ballSpeedIncrease;
-        ballVelocity.y = (ballPosition.y - playerPosition.y - paddleHeight / 2.0f) * 2.0f;
+        ballVelocity.y = ((ballPosition.y + ballSize / 2.0f) - (playerPosition.y + paddleHeight / 2.0f)) * 2.0f;
     }
     else if(isColliding(ballRect, enemyRect))
     {
         ballVelocity.x = -ballVelocity.x * ballSpeedIncrease;
-        ballVelocity.y = (ballPosition.y - enemyPosition.y - paddleHeight / 2.0f) * 2.0f;
+        ballVelocity.y = ((ballPosition.y + ballSize / 2.0f) - (enemyPosition.y + paddleHeight / 2.0f)) * 2.0f;
     }
 
     if(ballPosition.y < 0)
